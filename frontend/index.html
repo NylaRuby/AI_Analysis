@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthTrustAI - Patient Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <script src="main.js" defer></script>
+</head>
+
+<body>
+
+<header>
+    <h1>HealthTrustAI</h1>
+    <p>Dynamic Mortality Risk Monitor</p>
+
+    <nav>
+        <button onclick="showSection('uploadSection')">Upload PDFs</button>
+        <button onclick="showSection('dashboardSection')">Search Patient</button>
+        <button class="analyze-btn" onclick="handleSearch()">Run Sample Analysis</button>
+    </nav>
+</header>
+
+<section id="uploadSection" class="section" style="display:block;">
+    <div class="card">
+        <h2>Upload Patient Records</h2>
+        <p>Select multiple PDF reports or a ZIP archive for processing.</p>
+
+        <div style="display:flex; align-items:center; gap:15px; margin-top:15px; flex-wrap:wrap;">
+            <input type="file" id="fileInput" multiple accept=".pdf,.zip" style="display:none;" onchange="document.getElementById('fileNameDisplay').innerText = this.files.length + ' file(s) selected'">
+            
+            <button onclick="document.getElementById('fileInput').click()" class="secondary-btn">
+                Choose Files
+            </button>
+
+            <span id="fileNameDisplay" style="font-size:0.9em; color:#666; min-width: 120px;">
+                No file chosen
+            </span>
+
+            <button id="fileUploadBtn" class="primary-btn">
+                Upload to Server
+            </button>
+        </div>
+
+        <div id="uploadStatus"></div>
+    </div>
+</section>
+
+<section id="dashboardSection" class="section" style="display:none;">
+    <div class="card">
+        <h2>Patient Database Search</h2>
+        <p>Search by Patient ID to retrieve historical records and AI analysis.</p>
+
+        <div style="display:flex; align-items:center; gap:10px; margin-top:15px; flex-wrap:wrap;">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Enter Patient ID (e.g., QLD24/3922)" 
+                style="padding:10px 20px; border-radius:25px; border:1px solid #ccc; width:300px; outline: none;"
+            >
+            <button id="searchBtn" class="primary-btn">
+                Analyze Patient
+            </button>
+        </div>
+
+        <div id="searchStatus" style="margin-top:15px;"></div>
+    </div>
+</section>
+
+<section id="analysisSection" class="section" style="display:none;">
+    <div class="analysis-grid">
+
+        <div id="riskAssessment" class="card">
+            <h3>Overall Mortality Risk</h3>
+            <div style="display:flex; justify-content:center; align-items:center; height:150px;">
+                <canvas id="riskGauge" width="200" height="120"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Disease Risk Prediction</h3>
+            <div id="diseaseRisk"></div>
+        </div>
+
+        <div class="card">
+            <h3>Organ Severity Heatmap</h3>
+            <div id="riskHeatmap"></div>
+        </div>
+
+        <div class="card">
+            <h3>Clinical Trajectories</h3>
+            <div id="trajectories" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-top:10px;"></div>
+        </div>
+
+        <div class="card">
+            <h3>Detected Clinical Patterns</h3>
+            <div id="patterns-list"></div>
+        </div>
+
+        <div id="insights" class="card full-width"></div>
+
+        <div class="card full-width">
+            <h3>AI Explainability (Feature Contribution)</h3>
+            <p style="font-size:0.85em; color:#666; margin-bottom: 20px;">
+                These insights explain which biomarkers most strongly influence the AI risk predictions.
+            </p>
+            <div id="aiExplainability"></div>
+        </div>
+
+        <div class="card full-width">
+            <h3>AI Forecast: What-If Scenarios</h3>
+            <div id="counterfactual"></div>
+        </div>
+
+        <div class="card full-width">
+            <h3>Lab Trend Forecast (History + AI Prediction)</h3>
+            <div class="chart-container" style="height:320px; position:relative;">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <div id="organProgression" class="card full-width">
+            <h3>Organ Damage Progression</h3>
+            <div class="chart-row">
+                <div class="chart-item">
+                    <h4>Liver Function Trend (ALT)</h4>
+                    <div style="height:250px;"><canvas id="liverChart"></canvas></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Kidney Function Trend (Creatinine)</h4>
+                    <div style="height:250px;"><canvas id="kidneyChart"></canvas></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Diabetes Trend (HbA1c %)</h4>
+                    <div style="height:250px;"><canvas id="hba1cChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <div id="possible-causes-section" style="margin-top: 40px;"></div>
+            <div id="reference-notes-section"></div>
+        </div>
+
+        <div id="historyTable" class="card full-width">
+            <h3>Full Lab History</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>ALT</th>
+                        <th>Creatinine</th>
+                        <th>HbA1c</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div id="chat-container">
+    <div id="chat-window" class="chat-hidden">
+        <div class="chat-header">
+            <span>HealthTrustAI Assistant</span>
+            <button onclick="toggleChat()" class="close-btn">&times;</button>
+        </div>
+        <div id="chat-body">
+            <div style="text-align:left; margin-bottom:15px;">
+                <span style="background:#fff; padding:10px 14px; border-radius:15px 15px 15px 0; display:inline-block; border:1px solid #eee; max-width:85%; font-size:0.9em; color:#555; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+                    Hello! I am your HealthTrustAI assistant. How can I help you interpret these patient results today?
+                </span>
+            </div>
+        </div>
+
+        <div class="chat-quick-actions" style="padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; background: #fff; border-top: 1px solid #eee;">
+            <button class="action-btn" onclick="sendQuickAction('Explain my highest risk and area of improvement')" style="padding: 6px 12px; font-size: 0.8em; border-radius: 20px; border: 1px solid #0077b6; background: #f0fbff; color: #0077b6; cursor: pointer;">🔍 Risk Analysis</button>
+            <button class="action-btn" onclick="sendQuickAction('What are some lifestyle recommendations based on my results?')" style="padding: 6px 12px; font-size: 0.8em; border-radius: 20px; border: 1px solid #0077b6; background: #f0fbff; color: #0077b6; cursor: pointer;">🍎 Lifestyle</button>
+            <button class="action-btn" onclick="sendQuickAction('Can you show me my 6-month trend?')" style="padding: 6px 12px; font-size: 0.8em; border-radius: 20px; border: 1px solid #0077b6; background: #f0fbff; color: #0077b6; cursor: pointer;">📈 6-Month Trend</button>
+            <button class="action-btn" onclick="sendQuickAction('What are the typical symptoms of the disease(s) related to these labs?')" style="padding: 6px 12px; font-size: 0.8em; border-radius: 20px; border: 1px solid #0077b6; background: #f0fbff; color: #0077b6; cursor: pointer;">🩺 Symptoms</button>
+        </div>
+
+        <div class="chat-footer">
+            <input type="text" id="chat-input" placeholder="Ask about trends, causes, or risks...">
+            <button id="send-chat-btn">Send</button>
+        </div>
+    </div>
+    <button id="chat-fab" onclick="toggleChat()" title="Ask HealthTrustAI">💬</button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "hemoglobin": {
+    "female": { "min": 11.0, "max": 15.0 },
+    "male": { "min": 13.0, "max": 18.0 },
+    "unit": "gm/dL"
+  },
+  "rbc_count": {
+    "female": { "min": 3.8, "max": 5.5 },
+    "male": { "min": 4.0, "max": 5.5 },
+    "unit": "mil/cu.mm"
+  },
+  "hematocrit_hct": {
+    "female": { "min": 36, "max": 48 },
+    "male": { "min": 40, "max": 54 },
+    "unit": "%"
+  },
+  "platelet_count": {
+    "min": 1.5,
+    "max": 4.5,
+    "unit": "lac/cmm"
+  },
+  "creatinine": {
+    "min": 0.6,
+    "max": 1.2,
+    "unit": "mg/dL"
+  },
+  "glucose_fasting": {
+    "min": 70,
+    "max": 100,
+    "unit": "mg/dL"
+  },
+  "hba1c": {
+    "min": 4.0,
+    "max": 5.6,
+    "unit": "%"
+  },
+  "sgpt_alt": {
+    "min": 0,
+    "max": 49,
+    "unit": "U/L"
+  },
+  "sgot_ast": {
+    "min": 0,
+    "max": 46,
+    "unit": "U/L"
+  }
+}
