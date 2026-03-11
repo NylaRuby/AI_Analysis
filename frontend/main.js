@@ -1,4 +1,5 @@
 // ---------------- GLOBAL STATE ----------------
+const API_BASE_URL = "https://healthtrustai.onrender.com";
 let currentPatientData = null;
 let trendChart, liverChart, kidneyChart, diabetesChart, hba1cChart;
 
@@ -51,7 +52,7 @@ async function handleSearch() {
 
     try {
         statusDiv.innerHTML = "🔍 Querying Clinical Database...";
-        const res = await fetch(`/analyze/${patientId}`);
+        const res = await fetch(`${API_BASE_URL}/analyze/${patientId}`);
         const data = await res.json();
 
         if (!res.ok || data.error) {
@@ -498,7 +499,7 @@ async function sendMessage() {
     body.scrollTop = body.scrollHeight;
 
     try {
-        const res = await fetch('/chat', {
+        const res = await fetch(`${API_BASE_URL}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: msg, patient_data: currentPatientData })
